@@ -1816,10 +1816,11 @@ class API
                     }
                 }
             });
-            $ws->on('close', function ($code = null, $reason = null) {
+            $ws->on('close', function ($code = null, $reason = null) use($callback) {
                 // WPCS: XSS OK.
                 echo "ticker: WebSocket Connection closed! ({$code} - {$reason})" . PHP_EOL;
-            });
+				call_user_func($callback, false, null, null);
+			});
         }, function ($e) {
             // WPCS: XSS OK.
             echo "ticker: Could not connect: {$e->getMessage()}" . PHP_EOL;
@@ -2063,6 +2064,8 @@ class API
             $ws->on('close', function ($code = null, $reason = null) {
                 // WPCS: XSS OK.
                 echo "userData: WebSocket Connection closed! ({$code} - {$reason})" . PHP_EOL;
+				$this->info['balanceCallback'](false, null);
+				$this->info['executionCallback'](false, null);
             });
         }, function ($e) {
             // WPCS: XSS OK.
